@@ -63,50 +63,6 @@ public class FormController {
         return R.ok("OK");
     }
 
-    @PostMapping("/upload")
-    public R handleFileUpload(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return R.error("Please select a file to upload.");
-        }
-
-        try {
-            Path rootPath = Paths.get(resourceLoader.getResource("classpath:").getURI());
-            String relativePath = "uploads" + File.separator + file.getOriginalFilename();
-            Path destinationPath = rootPath.resolve(relativePath);
-            Files.createDirectories(destinationPath.getParent());
-            file.transferTo(destinationPath.toFile());
-            String filePath = destinationPath.toString();
-            String[] split = filePath.split("/");
-            String fileName = split[split.length-1];
-            return R.ok(fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return R.error(500,"Failed to upload the file.");
-        }
-    }
-
-    @PostMapping("/download")
-    public R downloadFile(@RequestBody JSONObject object) {
-        String fileName = object.getString("fileName");
-        try {
-            Path rootPath = Paths.get(resourceLoader.getResource("classpath:").getURI());
-            String relativePath = "uploads" + File.separator + fileName;
-            Path destinationPath = rootPath.resolve(relativePath);
-
-            Resource resource = new UrlResource(destinationPath.toUri());
-
-            if (resource.exists() && resource.isReadable()) {
-                byte[] fileContent = IOUtils.toByteArray(resource.getInputStream());
-                String base64Content = Base64.getEncoder().encodeToString(fileContent);
-                return R.ok(base64Content);
-            } else {
-                return R.error(HttpStatus.NOT_EXTENDED.value(), "文件不存在");
-            }
-        } catch (IOException e) {
-            log.error("Failed to download file: " + fileName, e);
-            return R.error();
-        }
-    }
 //    @PostMapping("/upload")
 //    public R handleFileUpload(@RequestParam("file") MultipartFile file) {
 //        if (file.isEmpty()) {
@@ -114,30 +70,18 @@ public class FormController {
 //        }
 //
 //        try {
-//            // 获取 uploads 文件夹的绝对路径
-//            Path rootPath = Paths.get("/Users/shenning/Desktop/app/LoginAndRegister/target/classes");
-//
-//            // 构建相对路径
-//            String relativePath = "uploads"+ File.separator + file.getOriginalFilename();
-//
-//            // 构建目标路径
+//            Path rootPath = Paths.get(resourceLoader.getResource("classpath:").getURI());
+//            String relativePath = "uploads" + File.separator + file.getOriginalFilename();
 //            Path destinationPath = rootPath.resolve(relativePath);
-//
-//            // 判断目标路径是否存在，不存在则创建
-//            if (!Files.exists(destinationPath.getParent())) {
-//                Files.createDirectories(destinationPath.getParent());
-//            }
-//
-//            // 将文件保存到目标路径
+//            Files.createDirectories(destinationPath.getParent());
 //            file.transferTo(destinationPath.toFile());
-//
-//            // 获取保存后的文件名
-//            String fileName = destinationPath.getFileName().toString();
-//
+//            String filePath = destinationPath.toString();
+//            String[] split = filePath.split("/");
+//            String fileName = split[split.length-1];
 //            return R.ok(fileName);
 //        } catch (IOException e) {
 //            e.printStackTrace();
-//            return R.error(500, "Failed to upload the file.");
+//            return R.error(500,"Failed to upload the file.");
 //        }
 //    }
 //
@@ -145,32 +89,88 @@ public class FormController {
 //    public R downloadFile(@RequestBody JSONObject object) {
 //        String fileName = object.getString("fileName");
 //        try {
-//            // 获取 uploads 文件夹的绝对路径
-//            Path rootPath = Paths.get("/Users/shenning/Desktop/app/LoginAndRegister/target/classes");
-//
-//            // 构建相对路径
-//            String relativePath = "uploads"+File.separator + fileName;
-//
-//            // 构建目标路径
+//            Path rootPath = Paths.get(resourceLoader.getResource("classpath:").getURI());
+//            String relativePath = "uploads" + File.separator + fileName;
 //            Path destinationPath = rootPath.resolve(relativePath);
 //
-//            // 创建资源对象
 //            Resource resource = new UrlResource(destinationPath.toUri());
 //
-//            // 判断资源是否存在且可读
 //            if (resource.exists() && resource.isReadable()) {
-//                // 读取文件内容并转换为Base64编码
 //                byte[] fileContent = IOUtils.toByteArray(resource.getInputStream());
 //                String base64Content = Base64.getEncoder().encodeToString(fileContent);
 //                return R.ok(base64Content);
 //            } else {
-//                return R.error(HttpStatus.NOT_FOUND.value(), "文件不存在");
+//                return R.error(HttpStatus.NOT_EXTENDED.value(), "文件不存在");
 //            }
 //        } catch (IOException e) {
 //            log.error("Failed to download file: " + fileName, e);
 //            return R.error();
 //        }
 //    }
+    @PostMapping("/upload")
+    public R handleFileUpload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return R.error("Please select a file to upload.");
+        }
+
+        try {
+            // 获取 uploads 文件夹的绝对路径
+            Path rootPath = Paths.get("C:/Users/shenning/Desktop/app/LoginAndRegister/target/classes");
+
+            // 构建相对路径
+            String relativePath = "uploads"+ File.separator + file.getOriginalFilename();
+
+            // 构建目标路径
+            Path destinationPath = rootPath.resolve(relativePath);
+
+            // 判断目标路径是否存在，不存在则创建
+            if (!Files.exists(destinationPath.getParent())) {
+                Files.createDirectories(destinationPath.getParent());
+            }
+
+            // 将文件保存到目标路径
+            file.transferTo(destinationPath.toFile());
+
+            // 获取保存后的文件名
+            String fileName = destinationPath.getFileName().toString();
+
+            return R.ok(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return R.error(500, "Failed to upload the file.");
+        }
+    }
+
+    @PostMapping("/download")
+    public R downloadFile(@RequestBody JSONObject object) {
+        String fileName = object.getString("fileName");
+        try {
+            // 获取 uploads 文件夹的绝对路径
+            Path rootPath = Paths.get("C:/Users/shenning/Desktop/app/LoginAndRegister/target/classes");
+
+            // 构建相对路径
+            String relativePath = "uploads"+File.separator + fileName;
+
+            // 构建目标路径
+            Path destinationPath = rootPath.resolve(relativePath);
+
+            // 创建资源对象
+            Resource resource = new UrlResource(destinationPath.toUri());
+
+            // 判断资源是否存在且可读
+            if (resource.exists() && resource.isReadable()) {
+                // 读取文件内容并转换为Base64编码
+                byte[] fileContent = IOUtils.toByteArray(resource.getInputStream());
+                String base64Content = Base64.getEncoder().encodeToString(fileContent);
+                return R.ok(base64Content);
+            } else {
+                return R.error(HttpStatus.NOT_FOUND.value(), "文件不存在");
+            }
+        } catch (IOException e) {
+            log.error("Failed to download file: " + fileName, e);
+            return R.error();
+        }
+    }
 
     /**
      * 我提交的表单
